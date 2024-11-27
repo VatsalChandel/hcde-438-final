@@ -1,70 +1,77 @@
-// src/components/CoffeeEntryForm.js
-import React, { useState } from 'react';
-import { db } from '../firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 
-const CoffeeEntryForm = () => {
+const CoffeeEntryForm = ({ initialData, onSave }) => {
   const [name, setName] = useState('');
   const [items, setItems] = useState('');
   const [rating, setRating] = useState('');
   const [price, setPrice] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const coffeeShop = { name, items, rating: Number(rating), price: Number(price) };
-      await addDoc(collection(db, 'coffeeShops'), coffeeShop);
-      alert('Coffee shop added!');
-      setName('');
-      setItems('');
-      setRating('');
-      setPrice('');
-    } catch (error) {
-      console.error('Error adding coffee shop: ', error);
-      alert('Failed to add coffee shop.');
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData.name || '');
+      setItems(Array.isArray(initialData.items) ? initialData.items.join(', ') : initialData.items || ''); // Ensure items is a string
+      setRating(initialData.rating || '');
+      setPrice(initialData.price || '');
     }
+  }, [initialData]);
 
-    setLoading(false);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const updatedShop = {
+      id: initialData?.id, // Retain the ID for updating
+      name,
+      items: items.split(',').map((item) => item.trim()), // Convert string back to array
+      rating: Number(rating),
+      price: Number(price),
+    };
+    onSave(updatedShop); // Pass the updated shop back to the parent
+    setName('');
+    setItems('');
+    setRating('');
+    setPrice('');
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Coffee Shop Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Items Purchased"
-        value={items}
-        onChange={(e) => setItems(e.target.value)}
-        required
-      />
-      <input
-        type="number"
-        placeholder="Rating (1-5)"
-        value={rating}
-        onChange={(e) => setRating(e.target.value)}
-        min="1"
-        max="5"
-        required
-      />
-      <input
-        type="number"
-        placeholder="Total Price ($)"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        required
-      />
-      <button type="submit" disabled={loading}>
-        {loading ? 'Saving...' : 'Add Coffee Shop'}
-      </button>
+      <div>
+        <label>Coffee Shop Name:</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label>Items (separate with commas):</label>
+        <input
+          type="text"
+          value={items}
+          onChange={(e) => setItems(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label>Rating (1-5):</label>
+        <input
+          type="number"
+          value={rating}
+          onChange={(e) => setRating(e.target.value)}
+          min="1"
+          max="5"
+          required
+        />
+      </div>
+      <div>
+        <label>Total Price ($):</label>
+        <input
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          required
+        />
+      </div>
+      <button type="submit">{initialData ? 'Save Changes' : 'Add Coffee Shop'}</button>
     </form>
   );
 };
