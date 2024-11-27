@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-const CoffeeEntryForm = ({ initialData, onSave }) => {
+const CoffeeEntryForm = ({ initialData, onSave, onDelete }) => {
+  const [id, setID] = useState('');
   const [name, setName] = useState('');
   const [items, setItems] = useState('');
   const [rating, setRating] = useState('');
@@ -8,28 +9,34 @@ const CoffeeEntryForm = ({ initialData, onSave }) => {
 
   useEffect(() => {
     if (initialData) {
+      setID(initialData.name + initialData.price)
       setName(initialData.name || '');
-      setItems(Array.isArray(initialData.items) ? initialData.items.join(', ') : initialData.items || ''); // Ensure items is a string
+      setItems(Array.isArray(initialData.items) ? initialData.items.join(', ') : initialData.items || '');
       setRating(initialData.rating || '');
       setPrice(initialData.price || '');
+    } else {
+      setID('')
+      setName('');
+      setItems('');
+      setRating('');
+      setPrice('');
     }
   }, [initialData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const updatedShop = {
-      id: initialData?.id, // Retain the ID for updating
+    const shop = {
+      ...(initialData?.id && { id: initialData.id }), // Include `id` only if editing
       name,
-      items: items.split(',').map((item) => item.trim()), // Convert string back to array
+      items: items.split(',').map((item) => item.trim()),
       rating: Number(rating),
       price: Number(price),
     };
-    onSave(updatedShop); // Pass the updated shop back to the parent
-    setName('');
-    setItems('');
-    setRating('');
-    setPrice('');
+    
+    console.log("Submitting shop with ID:", shop.id);
+    onSave(shop); // Pass the shop data (including the ID) to the parent component
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>
