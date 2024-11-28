@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-
-const GOOGLE_PLACES_API_KEY = 'AIzaSyATHLTNMlM6iWMO0mkb_dPUT4N54fZrlyQ';
+import { GOOGLE_PLACES_API_KEY } from '../keys';
 
 const GoToList = () => {
   const [goToPlaces, setGoToPlaces] = useState([]);
@@ -11,6 +10,9 @@ const GoToList = () => {
 
   const collectionRef = collection(db, 'goToPlaces');
 
+ 
+  
+  // Fetch all places on component mount
   useEffect(() => {
     const fetchGoToPlaces = async () => {
       try {
@@ -28,25 +30,41 @@ const GoToList = () => {
     fetchGoToPlaces();
   }, []);
 
-  const fetchAddress = async (placeName) => {
-    const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
-    const GOOGLE_API_URL = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(
+  // Fetch address and coordinates from Google Maps API
+  const fetchLocationDetails = async (placeName) => {
+    const userLatitude = 47.6634069; // Example user latitude
+    const userLongitude = -122.3138355; // Example user longitude
+    const searchRadius = 16093; // 10 miles in meters
+  
+    const GOOGLE_API_URL = `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(
       placeName
-    )}&inputtype=textquery&fields=formatted_address&key=${GOOGLE_PLACES_API_KEY}`;
-
+    )}&location=${userLatitude},${userLongitude}&radius=${searchRadius}&key=${GOOGLE_PLACES_API_KEY}`;
+  
     try {
-      const response = await fetch(CORS_PROXY + GOOGLE_API_URL);
+      const response = await fetch(GOOGLE_API_URL);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      return data.candidates[0]?.formatted_address || 'Address not found';
+      const result = data.results[0];
+      if (result) {
+        return {
+          address: result.formatted_address,
+          lat: result.geometry.location.lat,
+          lng: result.geometry.location.lng,
+        };
+      } else {
+        throw new Error('Location not found');
+      }
     } catch (error) {
-      console.error('Error fetching address:', error);
+      console.error('Error fetching location details:', error);
       return null;
     }
   };
+  
+  
 
+  // Add a new place with address and coordinates
   const addPlace = async () => {
     if (newPlace.trim() === '') {
       alert('Please enter a valid place name.');
@@ -54,33 +72,56 @@ const GoToList = () => {
     }
 
     try {
-      const address = await fetchAddress(newPlace.trim());
-      if (address) {
-        const docRef = await addDoc(collectionRef, { name: newPlace.trim(), address });
-        setGoToPlaces([...goToPlaces, { id: docRef.id, name: newPlace.trim(), address }]);
+      const locationDetails = await fetchLocationDetails(newPlace.trim());
+      if (locationDetails) {
+        const docRef = await addDoc(collectionRef, {
+          name: newPlace.trim(),
+          ...locationDetails, // Includes address, lat, and lng
+        });
+        setGoToPlaces([
+          ...goToPlaces,
+          { id: docRef.id, name: newPlace.trim(), ...locationDetails },
+        ]);
         setNewPlace('');
       } else {
-        alert('Could not fetch address. Please try again.');
+        alert('Could not fetch location details. Please try again.');
       }
     } catch (error) {
       console.error('Error adding new place: ', error);
     }
   };
 
+  // Update a place's name and address
   const updatePlace = async (id, updatedName, updatedAddress) => {
     try {
+      const updatedLocation = await fetchLocationDetails(updatedAddress);
+      if (!updatedLocation) {
+        alert('Could not update location. Please try again.');
+        return;
+      }
+
       const placeRef = doc(db, 'goToPlaces', id);
-      await updateDoc(placeRef, { name: updatedName, address: updatedAddress });
+      await updateDoc(placeRef, {
+        name: updatedName,
+        address: updatedLocation.address,
+        lat: updatedLocation.lat,
+        lng: updatedLocation.lng,
+      });
+
       setGoToPlaces((prevPlaces) =>
         prevPlaces.map((place) =>
-          place.id === id ? { ...place, name: updatedName, address: updatedAddress } : place
+          place.id === id
+            ? { ...place, name: updatedName, ...updatedLocation }
+            : place
         )
       );
+      setEditingPlace(null);
     } catch (error) {
       console.error('Error updating place:', error);
     }
   };
 
+  // Delete a place
   const deletePlace = async (id) => {
     try {
       const placeRef = doc(db, 'goToPlaces', id);
@@ -91,10 +132,12 @@ const GoToList = () => {
     }
   };
 
+  // Handle input change for the new place
   const handleInputChange = (e) => {
     setNewPlace(e.target.value);
   };
 
+  // Handle edit action
   const handleEdit = (place) => {
     setEditingPlace(place);
   };
@@ -122,10 +165,9 @@ const GoToList = () => {
                   }
                 />
                 <button
-                  onClick={() => {
-                    updatePlace(editingPlace.id, editingPlace.name, editingPlace.address);
-                    setEditingPlace(null);
-                  }}
+                  onClick={() =>
+                    updatePlace(editingPlace.id, editingPlace.name, editingPlace.address)
+                  }
                 >
                   Save
                 </button>
