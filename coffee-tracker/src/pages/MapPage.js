@@ -1,7 +1,7 @@
-import { GoogleMap, Marker, LoadScript } from '@react-google-maps/api';
-import { GOOGLE_PLACES_API_KEY } from '../keys'
+import { GoogleMap, Marker, LoadScript, InfoWindow } from '@react-google-maps/api';
+import { GOOGLE_PLACES_API_KEY } from '../keys';
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase'; 
+import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 const containerStyle = {
@@ -9,13 +9,12 @@ const containerStyle = {
   height: '600px',
 };
 
-
 const MapPage = () => {
   const [coffeeShops, setCoffeeShops] = useState([]);
   const [goToPlaces, setGoToPlaces] = useState([]);
-  const [userLocation, setUserLocation] = useState(null); // Store user's location
-
-
+  const [userLocation, setUserLocation] = useState(null); 
+  const [selectedShop, setSelectedShop] = useState(null);
+  
 
   useEffect(() => {
     // Fetch data from Firebase
@@ -53,7 +52,8 @@ const MapPage = () => {
         },
         (error) => {
           console.error('Error getting user location:', error);
-          // You can set a default location or handle error
+          
+          
           setUserLocation({ lat: 47.663399, lng: -122.313911 }); // Fallback location
         }
       );
@@ -62,9 +62,6 @@ const MapPage = () => {
       setUserLocation({ lat: 47.663399, lng: -122.313911 }); // Fallback location
     }
   }, []);
-
-
-
 
   return (
     <div>
@@ -78,6 +75,7 @@ const MapPage = () => {
               position={{ lat: shop.lat, lng: shop.lng }}
               icon="http://maps.google.com/mapfiles/ms/icons/green-dot.png" // Green for coffee shops
               title={`Coffee Shop: ${shop.name}`}
+              onClick={() => setSelectedShop(shop)} 
             />
           ))}
 
@@ -88,8 +86,26 @@ const MapPage = () => {
               position={{ lat: place.lat, lng: place.lng }}
               icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" // Blue for go-to places
               title={`Go-To: ${place.name}`}
+              onClick={() => setSelectedShop(place)}
             />
           ))}
+
+          {/* InfoWindow for selected coffee shop */}
+          {selectedShop && (
+            <InfoWindow
+              position={{ lat: selectedShop.lat, lng: selectedShop.lng }}
+              onCloseClick={() => setSelectedShop(null)} 
+            >
+              <div>
+                <h3>{selectedShop.name}</h3>
+                <p>{selectedShop.address}</p>
+                <p>Rating: {selectedShop.rating}</p>
+                <p>Price: ${selectedShop.price}</p>
+
+
+              </div>
+            </InfoWindow>
+          )}
         </GoogleMap>
       </LoadScript>
     </div>

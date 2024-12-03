@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, deleteDoc, doc, updateDoc, addDoc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import CoffeeEntryForm from '../components/CoffeeEntryForm';
-import { GOOGLE_PLACES_API_KEY } from '../keys'
+import { GOOGLE_PLACES_API_KEY } from '../keys';
 import './Home.css';
-
 
 const Home = () => {
   const [coffeeShops, setCoffeeShops] = useState([]);
   const [editingShop, setEditingShop] = useState(null);
+  const [isAdding, setIsAdding] = useState(false); // Track "Add Location" form visibility
 
   useEffect(() => {
     const fetchCoffeeShops = async () => {
@@ -27,7 +27,6 @@ const Home = () => {
     fetchCoffeeShops();
   }, []);
 
-  // Fetch address and coordinates for a given place name
   const fetchLocationDetails = async (placeName) => {
     const GOOGLE_API_URL = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
       placeName
@@ -55,10 +54,9 @@ const Home = () => {
     }
   };
 
-  // Save coffee shop (add or update)
   const handleSave = async (shop) => {
     try {
-      // Fetch address and coordinates
+      // Fetch location details if a shop name is provided
       const locationDetails = shop.name
         ? await fetchLocationDetails(shop.name)
         : null;
@@ -73,29 +71,23 @@ const Home = () => {
         ...locationDetails, // Includes address, lat, and lng
       };
 
-      if (shop.id) {
-        // Update existing shop
-        const shopRef = doc(db, 'coffeeShops', shop.id);
-        await setDoc(shopRef, updatedShop); // Update document
-        setCoffeeShops((prev) =>
-          prev.map((s) => (s.id === shop.id ? { ...s, ...updatedShop } : s))
-        );
-      } else {
-        // Add new shop with custom ID
-        const customId = `${shop.name}-${shop.items[0]}`.toLowerCase().replace(/\s+/g, '-');
-        const docRef = doc(db, 'coffeeShops', customId);
-        await setDoc(docRef, updatedShop); // Save with custom ID
-        setCoffeeShops((prev) => [...prev, { id: customId, ...updatedShop }]);
-      }
+      const customId = shop.id
+        ? shop.id // Use existing ID if editing
+        : `${shop.name}-${shop.items[0]}`.toLowerCase().replace(/\s+/g, '-');
+      const docRef = doc(db, 'coffeeShops', customId);
 
-      setEditingShop(null); // Close edit form
+      await setDoc(docRef, updatedShop); // Save with updated location details
+      setCoffeeShops((prev) =>
+        prev.map((s) =>
+          s.id === customId ? { ...s, ...updatedShop } : s
+        ).concat(shop.id ? [] : [{ id: customId, ...updatedShop }])
+      );
+
+      setIsAdding(false); // Hide form after saving
+      setEditingShop(null); // Reset editing state
     } catch (error) {
       console.error('Error saving coffee shop:', error);
     }
-  };
-
-  const handleEdit = (shop) => {
-    setEditingShop(shop);
   };
 
   const handleDelete = async (id) => {
@@ -110,8 +102,9 @@ const Home = () => {
 
   return (
     <div>
+      
       <h1>I've Been Here ☕</h1>
-      {editingShop ? (
+      {isAdding || editingShop ? (
         <CoffeeEntryForm
           initialData={editingShop}
           onSave={handleSave}
@@ -119,30 +112,20 @@ const Home = () => {
         />
       ) : (
         <>
-          <CoffeeEntryForm onSave={handleSave} onDelete={handleDelete} />
-          <h2>Visited Coffee Shops</h2>
-          <ul>
-            {coffeeShops.map((shop) => {
-              if (!shop.id) {
-                console.error('Shop ID is missing or invalid', shop); // Log missing IDs
-                return null;
-              }
 
-              return (
-                <li key={shop.id}>
-                  <strong>{shop.name}</strong> - {shop.rating} Stars - ${shop.price}
-                  <br />
-                  <em>{shop.address}</em> {/* Display address */}
-                  <br />
-                  <small>
-                    Lat: {shop.lat}, Lng: {shop.lng} {/* Display coordinates */}
-                  </small>
-                  <br />
-                  <button onClick={() => handleEdit(shop)}>Edit</button>
-                  <button onClick={() => handleDelete(shop.id)}>Delete</button>
-                </li>
-              );
-            })}
+          <button onClick={() => setIsAdding(true)}>Add Location</button>
+
+          <ul>
+            {coffeeShops.map((shop) => (
+              <li key={shop.id}>
+                <strong>{shop.name}</strong> || {shop.rating} Stars || ${shop.price} || Got: {shop.items}
+                <br />
+                <em>{shop.address}</em>
+             
+                <button onClick={() => setEditingShop(shop)}>Edit</button>
+                <button onClick={() => handleDelete(shop.id)}>Delete</button>
+              </li>
+            ))}
           </ul>
         </>
       )}
