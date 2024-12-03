@@ -3,6 +3,8 @@ import { db } from '../firebase';
 import { collection, getDocs, deleteDoc, doc, updateDoc, addDoc, setDoc } from 'firebase/firestore';
 import CoffeeEntryForm from '../components/CoffeeEntryForm';
 import { GOOGLE_PLACES_API_KEY } from '../keys'
+import './Home.css';
+
 
 const Home = () => {
   const [coffeeShops, setCoffeeShops] = useState([]);
@@ -108,7 +110,7 @@ const Home = () => {
 
   return (
     <div>
-      <h1>Coffee Tracker</h1>
+      <h1>I've Been Here ☕</h1>
       {editingShop ? (
         <CoffeeEntryForm
           initialData={editingShop}

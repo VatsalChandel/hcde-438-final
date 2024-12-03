@@ -28,11 +28,11 @@ const Profile = () => {
     };
 
     fetchProfileData();
-  }, []); // Empty dependency array ensures this runs only once on component mount
+  }, []); 
 
   return (
     <div>
-      <h1>Your Profile</h1>
+      <h1>About Me ☕</h1>
       <p>Total Visits: {totalVisits}</p>
       <p>Average Rating: {averageRating}</p>
       <p>Total Spending: ${totalSpending}</p>

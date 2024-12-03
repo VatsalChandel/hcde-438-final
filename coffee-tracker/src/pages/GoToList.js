@@ -144,7 +144,19 @@ const GoToList = () => {
 
   return (
     <div>
-      <h1>Go-To List</h1>
+      <h1>I Wanna Go 🏃‍♂️</h1>
+
+      <div>
+        <input
+          type="text"
+          placeholder="Enter a new place"
+          value={newPlace}
+          onChange={handleInputChange}
+        />
+        <button onClick={addPlace}>Add Place</button>
+      </div>
+
+
       <ul>
         {goToPlaces.map((place) => (
           <li key={place.id}>
@@ -187,15 +199,7 @@ const GoToList = () => {
           </li>
         ))}
       </ul>
-      <div>
-        <input
-          type="text"
-          placeholder="Enter a new place"
-          value={newPlace}
-          onChange={handleInputChange}
-        />
-        <button onClick={addPlace}>Add Place</button>
-      </div>
+      
     </div>
   );
 };

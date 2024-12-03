@@ -67,29 +67,32 @@ const MapPage = () => {
 
 
   return (
-    <LoadScript googleMapsApiKey={GOOGLE_PLACES_API_KEY}>
-      <GoogleMap mapContainerStyle={containerStyle} center={userLocation} zoom={12}>
-        {/* Markers for Coffee Shops */}
-        {coffeeShops.map((shop) => (
-          <Marker
-            key={shop.id}
-            position={{ lat: shop.lat, lng: shop.lng }}
-            icon="http://maps.google.com/mapfiles/ms/icons/green-dot.png" // Green for coffee shops
-            title={`Coffee Shop: ${shop.name}`}
-          />
-        ))}
+    <div>
+      <h1>Near Me 🗺️</h1>
+      <LoadScript googleMapsApiKey={GOOGLE_PLACES_API_KEY}>
+        <GoogleMap mapContainerStyle={containerStyle} center={userLocation} zoom={12}>
+          {/* Markers for Coffee Shops */}
+          {coffeeShops.map((shop) => (
+            <Marker
+              key={shop.id}
+              position={{ lat: shop.lat, lng: shop.lng }}
+              icon="http://maps.google.com/mapfiles/ms/icons/green-dot.png" // Green for coffee shops
+              title={`Coffee Shop: ${shop.name}`}
+            />
+          ))}
 
-        {/* Markers for Go-To Places */}
-        {goToPlaces.map((place) => (
-          <Marker
-            key={place.id}
-            position={{ lat: place.lat, lng: place.lng }}
-            icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" // Blue for go-to places
-            title={`Go-To: ${place.name}`}
-          />
-        ))}
-      </GoogleMap>
-    </LoadScript>
+          {/* Markers for Go-To Places */}
+          {goToPlaces.map((place) => (
+            <Marker
+              key={place.id}
+              position={{ lat: place.lat, lng: place.lng }}
+              icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" // Blue for go-to places
+              title={`Go-To: ${place.name}`}
+            />
+          ))}
+        </GoogleMap>
+      </LoadScript>
+    </div>
   );
 };
 
