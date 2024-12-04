@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { GOOGLE_PLACES_API_KEY } from '../keys';
+import './Home.css';
 
 const GoToList = () => {
   const [goToPlaces, setGoToPlaces] = useState([]);
@@ -146,17 +147,6 @@ const GoToList = () => {
     <div>
       <h1>I Wanna Go 🏃‍♂️</h1>
 
-      <div>
-        <input
-          type="text"
-          placeholder="Enter a new place"
-          value={newPlace}
-          onChange={handleInputChange}
-        />
-        <button onClick={addPlace}>Add Place</button>
-      </div>
-
-
       <ul>
         {goToPlaces.map((place) => (
           <li key={place.id}>
@@ -190,7 +180,7 @@ const GoToList = () => {
                 <strong>{place.name}</strong>
                 <br />
                 <em>{place.address}</em>
-                <div>
+                <div className="button-group">
                   <button onClick={() => handleEdit(place)}>Edit</button>
                   <button onClick={() => deletePlace(place.id)}>Delete</button>
                 </div>
@@ -199,6 +189,21 @@ const GoToList = () => {
           </li>
         ))}
       </ul>
+
+
+
+      <div>
+        <input
+          type="text"
+          placeholder="Enter a new place"
+          value={newPlace}
+          onChange={handleInputChange}
+        />
+        <div className="add-location-container">
+        <button className="add-location" onClick={addPlace}>Add Place</button>
+        </div>
+      </div>
+
       
     </div>
   );

@@ -112,23 +112,31 @@ const Home = () => {
         />
       ) : (
         <>
+         <ul>
 
-          <button onClick={() => setIsAdding(true)}>Add Location</button>
-
-          <ul>
             {coffeeShops.map((shop) => (
               <li key={shop.id}>
-                <strong>{shop.name}</strong> || {shop.rating} Stars || ${shop.price} || Got: {shop.items}
-                <br />
-                <em>{shop.address}</em>
-             
-                <button onClick={() => setEditingShop(shop)}>Edit</button>
-                <button onClick={() => handleDelete(shop.id)}>Delete</button>
+                <div className="shop-details">
+                  <strong>{shop.name}</strong>
+                  <em>{shop.address}</em>
+                  <div className="shop-meta">
+                    {shop.rating} Stars || ${shop.price} || Got: {shop.items.join(", ")}
+                  </div>
+                </div>
+                <div className="button-group">
+                  <button onClick={() => setEditingShop(shop)}>Edit</button>
+                  <button onClick={() => handleDelete(shop.id)}>Delete</button>
+                </div>
               </li>
             ))}
-          </ul>
+        </ul>
+        <div className="add-location-container">
+          <button onClick={() => setIsAdding(true)} className="add-location">Add Location</button>
+        </div>
         </>
+        
       )}
+
     </div>
   );
 };

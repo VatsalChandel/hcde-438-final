@@ -1,4 +1,4 @@
-import { GoogleMap, Marker, LoadScript, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, Marker, LoadScriptNext, InfoWindow } from '@react-google-maps/api';
 import { GOOGLE_PLACES_API_KEY } from '../keys';
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
@@ -44,7 +44,7 @@ const MapPage = () => {
 
     fetchData();
 
-    // Get user's current location
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -66,66 +66,89 @@ const MapPage = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Near Me 🗺️</h1>
-      <LoadScript googleMapsApiKey={GOOGLE_PLACES_API_KEY}>
-        <GoogleMap mapContainerStyle={containerStyle} center={userLocation} zoom={12}>
+    <LoadScriptNext googleMapsApiKey={GOOGLE_PLACES_API_KEY}>
+      <div>
+        <h1>Where I've Been 🗺️</h1>
+          <GoogleMap mapContainerStyle={containerStyle} center={userLocation} zoom={12}>
 
-          {/* Markers for Coffee Shops */}
-          {coffeeShops.map((shop) => (
-            <Marker
-              key={shop.id}
-              position={{ lat: shop.lat, lng: shop.lng }}
-              icon="http://maps.google.com/mapfiles/ms/icons/green-dot.png" 
-              title={`Coffee Shop: ${shop.name}`}
-              onClick={() => setSelectedShop(shop)} 
-            />
-          ))}
+            {/* Markers for Coffee Shops */}
+            {coffeeShops.map((shop) => (
+              <Marker
+                key={shop.id}
+                position={{ lat: shop.lat, lng: shop.lng }}
+                icon="http://maps.google.com/mapfiles/ms/icons/green-dot.png" 
+                title={`Coffee Shop: ${shop.name}`}
+                onClick={() => setSelectedShop(shop)} 
+              />
+            ))}
 
-          {/* Markers for Go-To Places */}
-          {goToPlaces.map((place) => (
-            <Marker
-              key={place.id}
-              position={{ lat: place.lat, lng: place.lng }}
-              icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" 
-              title={`Go-To: ${place.name}`}
-              onClick={() => setGoToShop(place)}
-            />
-          ))}
-
-
-
-          {selectedShop && (
-            <InfoWindow
-              position={{ lat: selectedShop.lat, lng: selectedShop.lng }}
-              onCloseClick={() => setSelectedShop(null)} 
-            >
-              <div>
-                <h3>{selectedShop.name}</h3>
-                <p>{selectedShop.address}</p>
-                <p>Rating: {selectedShop.rating}</p>
-                <p>Price: ${selectedShop.price}</p>
-              </div>
-            </InfoWindow>
-          )}
+            {/* Markers for Go-To Places */}
+            {goToPlaces.map((place) => (
+              <Marker
+                key={place.id}
+                position={{ lat: place.lat, lng: place.lng }}
+                icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" 
+                title={`Go-To: ${place.name}`}
+                onClick={() => setGoToShop(place)}
+              />
+            ))}
 
 
-          {goToShop && (
-            <InfoWindow
-              position={{ lat: goToShop.lat, lng: goToShop.lng }}
-              onCloseClick={() => setGoToShop(null)} 
-            >
-              <div>
-                <h3>{goToShop.name}</h3>
-                <p>{goToShop.address}</p>
-              </div>
-            </InfoWindow>
-          )}
+
+            {selectedShop && (
+              <InfoWindow
+                position={{ lat: selectedShop.lat, lng: selectedShop.lng }}
+                onCloseClick={() => setSelectedShop(null)} 
+              >
+                <div>
+                  <h3>{selectedShop.name}</h3>
+                  <p>{selectedShop.address}</p>
+                  <p>Rating: {selectedShop.rating}</p>
+                  <p>Price: ${selectedShop.price}</p>
+                </div>
+              </InfoWindow>
+            )}
 
 
-        </GoogleMap>
-      </LoadScript>
-    </div>
+            {goToShop && (
+              <InfoWindow
+                position={{ lat: goToShop.lat, lng: goToShop.lng }}
+                onCloseClick={() => setGoToShop(null)} 
+              >
+                <div>
+                  <h3>{goToShop.name}</h3>
+                  <p>{goToShop.address}</p>
+                </div>
+              </InfoWindow>
+            )}
+
+          </GoogleMap>
+
+
+          <div className="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Places I Have Been</th>
+                  <th>Places I Want to Go</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array(Math.max(coffeeShops.length, goToPlaces.length))
+                  .fill(null)
+                  .map((_, idx) => (
+                    <tr key={idx}>
+                      <td>{coffeeShops[idx]?.name || ''}</td>
+                      <td>{goToPlaces[idx]?.name || ''}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        
+      </div>
+    </LoadScriptNext>
+
   );
 };
 

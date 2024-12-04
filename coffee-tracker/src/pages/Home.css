@@ -109,4 +109,130 @@ body {
   .navbar-icon:hover {
     color: #f9f8f6;
   }
+
+
+  .add-location-container {
+    text-align: center;
+    margin-top: 20px;
+  }
   
+
+
+/* Coffee Shop Item Details */
+li .shop-details {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+}
+
+li .shop-details strong {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+li .shop-details em {
+  font-style: italic;
+  color: #6d4c41;
+  margin: 5px 0;
+}
+
+li .shop-meta {
+  font-size: 12px;
+  color: #4b2c20;
+  margin-top: 8px;
+}
+
+li .button-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 600px) {
+  li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  li .button-group {
+    margin-top: 10px;
+  }
+}
+
+
+input[type="text"] {
+  width: 100%;
+  max-width: 400px; /* Adjust based on your desired width */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px auto; /* Adds spacing around the input */
+  display: block; /* Centers the input horizontally when combined with margin */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+}
+
+
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+  justify-content: flex-start; /* Positions content at the top */
+  min-height: 100vh; /* Ensures the container takes up the full viewport height */
+  background-color: #f9f8f6; /* Optional: Adds a background color */
+  padding-top: 50px; /* Adjust this value to move content closer to the top */
+  text-align: center; /* Centers text alignment */
+}
+
+h1 {
+  font-size: 2rem;
+  color: #4b2c20;
+  margin-bottom: 20px; /* Adds spacing below the heading */
+}
+
+p {
+  font-size: 1.2rem;
+  color: #6d4c41;
+  margin: 10px 0;
+}
+
+
+
+.table-container {
+  margin-top: 20px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: auto; /* Ensures the table is scrollable if too wide */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  background-color: #f9f8f6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  background-color: #d2b49c;
+  color: #4b2c20;
+  font-weight: bold;
+  text-align: center;
+}
+
+td {
+  color: #6d4c41;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
