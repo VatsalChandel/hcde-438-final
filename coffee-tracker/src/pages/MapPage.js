@@ -14,14 +14,15 @@ const MapPage = () => {
   const [goToPlaces, setGoToPlaces] = useState([]);
   const [userLocation, setUserLocation] = useState(null); 
   const [selectedShop, setSelectedShop] = useState(null);
-  
+  const [goToShop, setGoToShop] = useState(null);
 
   useEffect(() => {
-    // Fetch data from Firebase
+
     const fetchData = async () => {
       try {
         const coffeeShopsSnapshot = await getDocs(collection(db, 'coffeeShops'));
         const goToPlacesSnapshot = await getDocs(collection(db, 'goToPlaces'));
+        console.log("Got CoffeeShops");
 
         setCoffeeShops(
           coffeeShopsSnapshot.docs.map((doc) => ({
@@ -49,6 +50,7 @@ const MapPage = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation({ lat: latitude, lng: longitude });
+          console.log("Got User Loc");
         },
         (error) => {
           console.error('Error getting user location:', error);
@@ -68,12 +70,13 @@ const MapPage = () => {
       <h1>Near Me 🗺️</h1>
       <LoadScript googleMapsApiKey={GOOGLE_PLACES_API_KEY}>
         <GoogleMap mapContainerStyle={containerStyle} center={userLocation} zoom={12}>
+
           {/* Markers for Coffee Shops */}
           {coffeeShops.map((shop) => (
             <Marker
               key={shop.id}
               position={{ lat: shop.lat, lng: shop.lng }}
-              icon="http://maps.google.com/mapfiles/ms/icons/green-dot.png" // Green for coffee shops
+              icon="http://maps.google.com/mapfiles/ms/icons/green-dot.png" 
               title={`Coffee Shop: ${shop.name}`}
               onClick={() => setSelectedShop(shop)} 
             />
@@ -84,13 +87,14 @@ const MapPage = () => {
             <Marker
               key={place.id}
               position={{ lat: place.lat, lng: place.lng }}
-              icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" // Blue for go-to places
+              icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" 
               title={`Go-To: ${place.name}`}
-              onClick={() => setSelectedShop(place)}
+              onClick={() => setGoToShop(place)}
             />
           ))}
 
-          {/* InfoWindow for selected coffee shop */}
+
+
           {selectedShop && (
             <InfoWindow
               position={{ lat: selectedShop.lat, lng: selectedShop.lng }}
@@ -101,11 +105,24 @@ const MapPage = () => {
                 <p>{selectedShop.address}</p>
                 <p>Rating: {selectedShop.rating}</p>
                 <p>Price: ${selectedShop.price}</p>
-
-
               </div>
             </InfoWindow>
           )}
+
+
+          {goToShop && (
+            <InfoWindow
+              position={{ lat: goToShop.lat, lng: goToShop.lng }}
+              onCloseClick={() => setGoToShop(null)} 
+            >
+              <div>
+                <h3>{goToShop.name}</h3>
+                <p>{goToShop.address}</p>
+              </div>
+            </InfoWindow>
+          )}
+
+
         </GoogleMap>
       </LoadScript>
     </div>

@@ -6,6 +6,7 @@ const Profile = () => {
   const [totalVisits, setTotalVisits] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [totalSpending, setTotalSpending] = useState(0);
+  const [favoriteItem, setFavoriteItem] = useState(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -14,10 +15,10 @@ const Profile = () => {
         const coffeeShopsSnapshot = await getDocs(coffeeShopsCol);
         const coffeeShops = coffeeShopsSnapshot.docs.map(doc => doc.data());
 
-        // Calculate statistics
         const totalVisits = coffeeShops.length;
         const totalRating = coffeeShops.reduce((sum, shop) => sum + shop.rating, 0);
         const totalSpending = coffeeShops.reduce((sum, shop) => sum + shop.price, 0);
+
 
         setTotalVisits(totalVisits);
         setAverageRating(totalVisits > 0 ? (totalRating / totalVisits).toFixed(1) : 0);
@@ -36,6 +37,7 @@ const Profile = () => {
       <p>Total Visits: {totalVisits}</p>
       <p>Average Rating: {averageRating}</p>
       <p>Total Spending: ${totalSpending}</p>
+      <p>Favorite Item: {favoriteItem}</p>
     </div>
   );
 };
