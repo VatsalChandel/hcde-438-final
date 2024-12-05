@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+
 import { collection, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import CoffeeEntryForm from '../components/CoffeeEntryForm';
 import { GOOGLE_PLACES_API_KEY } from '../keys';
 import './Home.css';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const Home = () => {
   const [coffeeShops, setCoffeeShops] = useState([]);
+
   const [editingShop, setEditingShop] = useState(null);
   const [isAdding, setIsAdding] = useState(false); // Track "Add Location" form visibility
+  
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+
+ 
+
     const fetchCoffeeShops = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'coffeeShops'));
@@ -100,15 +112,22 @@ const Home = () => {
     }
   };
 
+  const closeForm = () => {
+    setIsAdding(false);
+    setEditingShop(null);
+  }
+
   return (
     <div>
       
       <h1>I've Been Here ☕</h1>
+
       {isAdding || editingShop ? (
         <CoffeeEntryForm
           initialData={editingShop}
           onSave={handleSave}
           onDelete={handleDelete}
+          onClose={closeForm}
         />
       ) : (
         <>

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './CoffeeEntryForm.css';
-import { useNavigate } from 'react-router-dom';
 
-const CoffeeEntryForm = ({ initialData, onSave, onDelete }) => {
+const CoffeeEntryForm = ({ initialData, onSave, onClose }) => {
   const [id, setID] = useState('');
   const [name, setName] = useState('');
   const [items, setItems] = useState('');
   const [rating, setRating] = useState('');
   const [price, setPrice] = useState('');
-  const navigate = useNavigate(); // For navigation
 
   useEffect(() => {
     if (initialData) {
@@ -42,7 +40,7 @@ const CoffeeEntryForm = ({ initialData, onSave, onDelete }) => {
 
   return (
     <div className="form-container">
-      <button className="back-button" onClick={() => navigate(-1)}>Back</button>
+      <button className="back-button" onClick={onClose}>Back</button>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Coffee Shop Name:</label>
