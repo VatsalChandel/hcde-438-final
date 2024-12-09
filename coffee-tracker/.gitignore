@@ -23,5 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 
-keys.js
-firebase.js
+src/keys.js
+src/firebase.js
