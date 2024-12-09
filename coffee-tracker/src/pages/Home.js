@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { db, auth } from '../firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { db } from '../firebase';
 
 import { collection, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import CoffeeEntryForm from '../components/CoffeeEntryForm';
 import { GOOGLE_PLACES_API_KEY } from '../keys';
 import './Home.css';
-import { useNavigate } from 'react-router-dom';
 
 
 
@@ -14,14 +12,11 @@ const Home = () => {
   const [coffeeShops, setCoffeeShops] = useState([]);
 
   const [editingShop, setEditingShop] = useState(null);
-  const [isAdding, setIsAdding] = useState(false); // Track "Add Location" form visibility
+  const [isAdding, setIsAdding] = useState(false); 
   
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+
 
   useEffect(() => {
-
- 
 
     const fetchCoffeeShops = async () => {
       try {
@@ -31,6 +26,7 @@ const Home = () => {
           ...doc.data(),
         }));
         setCoffeeShops(shops);
+
       } catch (error) {
         console.error('Error fetching coffee shops:', error);
       }
@@ -49,6 +45,7 @@ const Home = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
       const result = data.results[0];
       if (result) {
@@ -57,9 +54,11 @@ const Home = () => {
           lat: result.geometry.location.lat,
           lng: result.geometry.location.lng,
         };
+
       } else {
         throw new Error('Location not found');
       }
+
     } catch (error) {
       console.error('Error fetching location details:', error);
       return null;
@@ -68,7 +67,6 @@ const Home = () => {
 
   const handleSave = async (shop) => {
     try {
-      // Fetch location details if a shop name is provided
       const locationDetails = shop.name
         ? await fetchLocationDetails(shop.name)
         : null;
@@ -80,23 +78,23 @@ const Home = () => {
 
       const updatedShop = {
         ...shop,
-        ...locationDetails, // Includes address, lat, and lng
+        ...locationDetails, 
       };
 
       const customId = shop.id
-        ? shop.id // Use existing ID if editing
-        : `${shop.name}-${shop.items[0]}`.toLowerCase().replace(/\s+/g, '-');
+        ? shop.id 
+        : `${shop.name}-${shop.items[0]}`.toLowerCase().replace(/\s+/g, '-'); // easy way to create unique ID of shops
       const docRef = doc(db, 'coffeeShops', customId);
 
-      await setDoc(docRef, updatedShop); // Save with updated location details
+      await setDoc(docRef, updatedShop); 
       setCoffeeShops((prev) =>
         prev.map((s) =>
           s.id === customId ? { ...s, ...updatedShop } : s
         ).concat(shop.id ? [] : [{ id: customId, ...updatedShop }])
       );
 
-      setIsAdding(false); // Hide form after saving
-      setEditingShop(null); // Reset editing state
+      setIsAdding(false);
+      setEditingShop(null); 
     } catch (error) {
       console.error('Error saving coffee shop:', error);
     }
@@ -142,12 +140,15 @@ const Home = () => {
                     {shop.rating} Stars || ${shop.price} || Got: {shop.items.join(", ")}
                   </div>
                 </div>
+                
                 <div className="button-group">
                   <button onClick={() => setEditingShop(shop)}>Edit</button>
                   <button onClick={() => handleDelete(shop.id)}>Delete</button>
                 </div>
+
               </li>
             ))}
+  
         </ul>
         <div className="add-location-container">
           <button onClick={() => setIsAdding(true)} className="add-location">Add Location</button>

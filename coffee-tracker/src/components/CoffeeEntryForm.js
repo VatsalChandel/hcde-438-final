@@ -27,7 +27,7 @@ const CoffeeEntryForm = ({ initialData, onSave, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const shop = {
-      ...(initialData?.id && { id: initialData.id }), // Include `id` only if editing
+      ...(initialData?.id && { id: initialData.id }), 
       name,
       items: items.split(',').map((item) => item.trim()),
       rating: Number(rating),
@@ -35,13 +35,16 @@ const CoffeeEntryForm = ({ initialData, onSave, onClose }) => {
     };
 
     console.log("Submitting shop with ID:", shop.id);
-    onSave(shop); // Pass the shop data (including the ID) to the parent component
+    onSave(shop);
   };
 
   return (
     <div className="form-container">
+
       <button className="back-button" onClick={onClose}>Back</button>
+
       <form onSubmit={handleSubmit}>
+
         <div>
           <label>Coffee Shop Name:</label>
           <input
@@ -51,6 +54,7 @@ const CoffeeEntryForm = ({ initialData, onSave, onClose }) => {
             required
           />
         </div>
+
         <div>
           <label>Items (separate with commas):</label>
           <input
@@ -60,10 +64,11 @@ const CoffeeEntryForm = ({ initialData, onSave, onClose }) => {
             required
           />
         </div>
+
         <div>
           <label>Rating (1-5):</label>
           <input
-            type="number"
+            type="float"
             value={rating}
             onChange={(e) => setRating(e.target.value)}
             min="1"
@@ -71,16 +76,19 @@ const CoffeeEntryForm = ({ initialData, onSave, onClose }) => {
             required
           />
         </div>
+
         <div>
           <label>Total Price ($):</label>
           <input
-            type="number"
+            type="float"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required
           />
         </div>
+
         <button type="submit">{initialData ? 'Save Changes' : 'Add Coffee Shop'}</button>
+        
       </form>
     </div>
   );

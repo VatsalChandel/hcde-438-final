@@ -37,6 +37,7 @@ const MapPage = () => {
             ...doc.data(),
           }))
         );
+
       } catch (error) {
         console.error('Error fetching data from Firebase:', error);
       }
@@ -52,16 +53,17 @@ const MapPage = () => {
           setUserLocation({ lat: latitude, lng: longitude });
           console.log("Got User Loc");
         },
+
         (error) => {
           console.error('Error getting user location:', error);
           
           
-          setUserLocation({ lat: 47.663399, lng: -122.313911 }); // Fallback location
+          setUserLocation({ lat: 47.663399, lng: -122.313911 }); // Fallback location, my apartment 
         }
       );
     } else {
       console.error('Geolocation is not supported by this browser.');
-      setUserLocation({ lat: 47.663399, lng: -122.313911 }); // Fallback location
+      setUserLocation({ lat: 47.663399, lng: -122.313911 });
     }
   }, []);
 
@@ -71,29 +73,34 @@ const MapPage = () => {
         <h1>Where I've Been 🗺️</h1>
           <GoogleMap mapContainerStyle={containerStyle} center={userLocation} zoom={12}>
 
-            {/* Markers for Coffee Shops */}
             {coffeeShops.map((shop) => (
               <Marker
                 key={shop.id}
                 position={{ lat: shop.lat, lng: shop.lng }}
-                icon="http://maps.google.com/mapfiles/ms/icons/green-dot.png" 
+                icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" 
                 title={`Coffee Shop: ${shop.name}`}
                 onClick={() => setSelectedShop(shop)} 
               />
             ))}
 
-            {/* Markers for Go-To Places */}
             {goToPlaces.map((place) => (
               <Marker
                 key={place.id}
                 position={{ lat: place.lat, lng: place.lng }}
-                icon="http://maps.google.com/mapfiles/ms/icons/blue-dot.png" 
+                icon="http://maps.google.com/mapfiles/ms/icons/orange-dot.png" 
                 title={`Go-To: ${place.name}`}
                 onClick={() => setGoToShop(place)}
               />
             ))}
 
 
+            {userLocation && (
+              <Marker
+                position={userLocation}
+                icon="http://maps.google.com/mapfiles/ms/icons/ltblue-dot.png"  
+                title="You are here"
+              />
+            )}
 
             {selectedShop && (
               <InfoWindow
@@ -105,6 +112,7 @@ const MapPage = () => {
                   <p>{selectedShop.address}</p>
                   <p>Rating: {selectedShop.rating}</p>
                   <p>Price: ${selectedShop.price}</p>
+                  <p>Items Got: {selectedShop.items}</p>
                 </div>
               </InfoWindow>
             )}
@@ -127,12 +135,14 @@ const MapPage = () => {
 
           <div className="table-container">
             <table>
+
               <thead>
                 <tr>
-                  <th>Places I Have Been</th>
-                  <th>Places I Want to Go</th>
+                  <th>Places I Have Been <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png" alt=" || Blue Pin"></img></th>
+                  <th>Places I Want to Go <img src="https://maps.google.com/mapfiles/ms/icons/orange-dot.png" alt="|| Orange Pin"></img></th>
                 </tr>
               </thead>
+
               <tbody>
                 {Array(Math.max(coffeeShops.length, goToPlaces.length))
                   .fill(null)
@@ -143,6 +153,7 @@ const MapPage = () => {
                     </tr>
                   ))}
               </tbody>
+              
             </table>
           </div>
         

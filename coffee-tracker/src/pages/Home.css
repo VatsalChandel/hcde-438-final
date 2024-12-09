@@ -1,124 +1,124 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f8f6;
-  }
-  
-  h1 {
-    text-align: center;
-    font-size: 24px;
-    color: #4b2c20;
-    margin: 20px 0;
-  }
-  
-  h2 {
-    text-align: center;
-    font-size: 18px;
-    color: #4b2c20;
-    margin: 10px 0;
-  }
-  
-  /* Coffee Shops List */
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #d2b49c;
-    padding: 10px;
-    margin: 10px auto;
-    border-radius: 8px;
-    max-width: 90%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  li strong {
-    font-size: 16px;
-    color: #4b2c20;
-  }
-  
-  li em {
-    display: block;
-    font-size: 12px;
-    color: #6d4c41;
-  }
-  
-  li small {
-    font-size: 10px;
-    color: #6d4c41;
-  }
-  
-  button {
-    background-color: #8c6e63;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px;
-  }
-  
-  button:hover {
-    background-color: #6d4c41;
-  }
-  
-  /* Add Location Button */
-  .add-location {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: bold;
-    background-color: #a38274;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: center;
-  }
-  
-  .add-location:hover {
-    background-color: #8c6e63;
-  }
-  
-  /* Navbar */
-  .navbar {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background-color: #a38274;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
-  
-  .navbar-icon {
-    color: white;
-    font-size: 24px;
-    text-align: center;
-    cursor: pointer;
-  }
-  
-  .navbar-icon:hover {
-    color: #f9f8f6;
-  }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f8f6;
+}
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+  color: #4b2c20;
+  margin: 20px 0;
+}
+
+h2 {
+  text-align: center;
+  font-size: 18px;
+  color: #4b2c20;
+  margin: 10px 0;
+}
+
+/* Shops List */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #d2b49c;
+  padding: 10px;
+  margin: 10px auto;
+  border-radius: 8px;
+  max-width: 90%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+li strong {
+  font-size: 16px;
+  color: #4b2c20;
+}
+
+li em {
+  display: block;
+  font-size: 12px;
+  color: #6d4c41;
+}
+
+li small {
+  font-size: 10px;
+  color: #6d4c41;
+}
+
+button {
+  background-color: #8c6e63;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+button:hover {
+  background-color: #6d4c41;
+}
+
+/* Add Location Button */
+.add-location {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #a38274;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.add-location:hover {
+  background-color: #8c6e63;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #a38274;
+  padding: 10px 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.navbar-icon {
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.navbar-icon:hover {
+  color: #f9f8f6;
+}
 
 
-  .add-location-container {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
+.add-location-container {
+  text-align: center;
+  margin-top: 20px;
+}
 
 
-/* Coffee Shop Item Details */
+
+/* items in shops */
 li .shop-details {
   display: flex;
   flex-direction: column;
@@ -147,7 +147,7 @@ li .button-group {
   gap: 10px;
 }
 
-/* Mobile Responsive Design */
+/* Mobile Responsive */
 @media (max-width: 600px) {
   li {
     flex-direction: column;
@@ -162,30 +162,30 @@ li .button-group {
 
 input[type="text"] {
   width: 100%;
-  max-width: 400px; /* Adjust based on your desired width */
+  max-width: 400px; 
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin: 10px auto; /* Adds spacing around the input */
-  display: block; /* Centers the input horizontally when combined with margin */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+  margin: 10px auto; 
+  display: block; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 
 .profile-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centers content horizontally */
-  justify-content: flex-start; /* Positions content at the top */
-  min-height: 100vh; /* Ensures the container takes up the full viewport height */
-  background-color: #f9f8f6; /* Optional: Adds a background color */
-  padding-top: 50px; /* Adjust this value to move content closer to the top */
-  text-align: center; /* Centers text alignment */
+  align-items: center; 
+  justify-content: flex-start; 
+  min-height: 100vh; 
+  background-color: #f9f8f6; 
+  padding-top: 50px; 
+  text-align: center; 
 }
 
 h1 {
   font-size: 2rem;
   color: #4b2c20;
-  margin-bottom: 20px; /* Adds spacing below the heading */
+  margin-bottom: 20px; 
 }
 
 p {
@@ -201,7 +201,7 @@ p {
   width: 90%;
   margin-left: auto;
   margin-right: auto;
-  overflow-x: auto; /* Ensures the table is scrollable if too wide */
+  overflow-x: auto; 
 }
 
 table {

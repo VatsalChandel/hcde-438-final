@@ -8,40 +8,63 @@ const GoToList = () => {
   const [goToPlaces, setGoToPlaces] = useState([]);
   const [newPlace, setNewPlace] = useState('');
   const [editingPlace, setEditingPlace] = useState(null);
-
   const collectionRef = collection(db, 'goToPlaces');
+  const [userLocation, setUserLocation] = useState(null); 
 
  
   
-  // Fetch all places on component mount
   useEffect(() => {
     const fetchGoToPlaces = async () => {
       try {
+
         const querySnapshot = await getDocs(collectionRef);
         const places = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
         setGoToPlaces(places);
+
       } catch (error) {
         console.error('Error fetching go-to places: ', error);
       }
     };
 
     fetchGoToPlaces();
+
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          console.log("Got User Loc");
+        },
+        (error) => {
+          console.error('Error getting user location:', error);
+          
+          
+          setUserLocation({ lat: 47.663399, lng: -122.313911 }); // Fallback location
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+      setUserLocation({ lat: 47.663399, lng: -122.313911 }); // Fallback location
+    }
+
+
   }, []);
 
-  // Fetch address and coordinates from Google Maps API
   const fetchLocationDetails = async (placeName) => {
-    const userLatitude = 47.6634069; // Example user latitude
-    const userLongitude = -122.3138355; // Example user longitude
-    const searchRadius = 16093; // 10 miles in meters
+    const userLatitude = userLocation.lat; 
+    const userLongitude = userLocation.lng; 
+    const searchRadius = 16000; // So that users do not get anything from Italy or smth 
   
     const GOOGLE_API_URL = `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(
       placeName
     )}&location=${userLatitude},${userLongitude}&radius=${searchRadius}&key=${GOOGLE_PLACES_API_KEY}`;
   
     try {
+
       const response = await fetch(GOOGLE_API_URL);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -57,6 +80,7 @@ const GoToList = () => {
       } else {
         throw new Error('Location not found');
       }
+
     } catch (error) {
       console.error('Error fetching location details:', error);
       return null;
@@ -65,7 +89,6 @@ const GoToList = () => {
   
   
 
-  // Add a new place with address and coordinates
   const addPlace = async () => {
     if (newPlace.trim() === '') {
       alert('Please enter a valid place name.');
@@ -77,22 +100,25 @@ const GoToList = () => {
       if (locationDetails) {
         const docRef = await addDoc(collectionRef, {
           name: newPlace.trim(),
-          ...locationDetails, // Includes address, lat, and lng
+          ...locationDetails,
         });
+
         setGoToPlaces([
           ...goToPlaces,
           { id: docRef.id, name: newPlace.trim(), ...locationDetails },
         ]);
+
         setNewPlace('');
+
       } else {
         alert('Could not fetch location details. Please try again.');
       }
+
     } catch (error) {
       console.error('Error adding new place: ', error);
     }
   };
 
-  // Update a place's name and address
   const updatePlace = async (id, updatedName, updatedAddress) => {
     try {
       const updatedLocation = await fetchLocationDetails(updatedAddress);
@@ -116,13 +142,13 @@ const GoToList = () => {
             : place
         )
       );
+
       setEditingPlace(null);
     } catch (error) {
       console.error('Error updating place:', error);
     }
   };
 
-  // Delete a place
   const deletePlace = async (id) => {
     try {
       const placeRef = doc(db, 'goToPlaces', id);
@@ -133,12 +159,11 @@ const GoToList = () => {
     }
   };
 
-  // Handle input change for the new place
+
   const handleInputChange = (e) => {
     setNewPlace(e.target.value);
   };
 
-  // Handle edit action
   const handleEdit = (place) => {
     setEditingPlace(place);
   };
@@ -152,6 +177,7 @@ const GoToList = () => {
           <li key={place.id}>
             {editingPlace?.id === place.id ? (
               <>
+
                 <input
                   type="text"
                   value={editingPlace.name}
@@ -159,6 +185,7 @@ const GoToList = () => {
                     setEditingPlace({ ...editingPlace, name: e.target.value })
                   }
                 />
+
                 <input
                   type="text"
                   value={editingPlace.address}
@@ -166,14 +193,17 @@ const GoToList = () => {
                     setEditingPlace({ ...editingPlace, address: e.target.value })
                   }
                 />
+
                 <button
                   onClick={() =>
                     updatePlace(editingPlace.id, editingPlace.name, editingPlace.address)
                   }
                 >
+
                   Save
                 </button>
                 <button onClick={() => setEditingPlace(null)}>Cancel</button>
+
               </>
             ) : (
               <>
@@ -199,6 +229,7 @@ const GoToList = () => {
           value={newPlace}
           onChange={handleInputChange}
         />
+        
         <div className="add-location-container">
         <button className="add-location" onClick={addPlace}>Add Place</button>
         </div>
